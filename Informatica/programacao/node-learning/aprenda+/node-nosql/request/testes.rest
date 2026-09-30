@@ -1,0 +1,31 @@
+@baseURL = http://localhost:3000
+@id_do_usuario = 6a5d5f245ada6d8479f3c9b7
+
+### 1. Criar um novo usuário (POST)
+POST {{baseURL}}/usuarios
+Content-Type: application/json
+    
+{
+      "nome": "Carlos",
+      "idade": 28,
+      "email": "carlos@exemplo.com"
+}
+    
+### 2. Obter todos os usuários (GET)
+GET {{baseURL}}/usuarios
+Content-Type: application/json
+    
+### 3. Atualizar um usuário existente (PUT)
+PUT {{baseURL}}/usuarios/{{id_do_usuario}}
+Content-Type: application/json
+    
+{
+      "nome": "Carlos Silva",
+      "idade": 30,
+      "email": "carlos.silva@exemplo.com"
+}
+    
+### 4. Deletar um usuário (DELETE)
+DELETE {{baseURL}}/usuarios/{{id_do_usuario}}
+Content-Type: application/json
+    

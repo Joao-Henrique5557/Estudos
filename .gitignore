@@ -1,0 +1,42 @@
+# OS and editor files
+.DS_Store
+Thumbs.db
+Desktop.ini
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node.js dependencies and generated files
+**/node_modules/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+.npm/
+.parcel-cache/
+.next/
+.nuxt/
+coverage/
+
+# Build outputs
+**/dist/
+**/build/
+**/target/
+.gradle/
+CMakeFiles/
+CMakeCache.txt
+cmake-build-*/
+
+# Compiled files and caches
+*.class
+*.o
+*.obj
+*.py[cod]
+__pycache__/
+.venv/
+venv/
+
+# Logs and temporary files
+*.log
+*.tmp
