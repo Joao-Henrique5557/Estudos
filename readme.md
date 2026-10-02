@@ -2,6 +2,16 @@
 
 > Mapa pessoal de conhecimentos — Fundamental → Ensino Médio → Avançado
 
+## Encontrar um assunto para estudar
+
+Use o localizador no terminal para procurar a pasta de um tema:
+
+```bash
+./estudar.sh "como calcular juros e descontos"
+```
+
+Sem argumentos, `./estudar.sh` abre uma busca interativa. O localizador pesquisa os mapas em `Ensino geral/ENEM/` e `Ensino geral/EnsinoMedio/` localmente, sem enviar consultas a serviços externos.
+
 ---
 
 # 📊 PAINEL GERAL
