@@ -27,16 +27,20 @@ EOF
     exit 0
 fi
 
+exec 3<&0
 python3 - "$ROOT" "$@" <<'PY'
 from collections import Counter
 from difflib import SequenceMatcher
 from pathlib import Path
 import math
+import os
 import re
+import subprocess
 import sys
 import unicodedata
 
 PROJECT = Path(sys.argv[1])
+PROMPT_INPUT = os.fdopen(3)
 AREAS = (
     ("ENEM", PROJECT / "Ensino geral" / "ENEM"),
     ("EnsinoMedio", PROJECT / "Ensino geral" / "EnsinoMedio"),
@@ -279,9 +283,10 @@ def search(query, documents):
     results = rank(query, documents)
     if not results:
         print("Não encontrei uma pasta correspondente. Tente incluir a matéria ou um termo do assunto.")
-        return
+        return False
 
     print(f"\nSugestões para: {query}\n")
+    choices = []
     for area in ("ENEM", "EnsinoMedio"):
         matching_area = [row for row in results if row[2]["area"] == area][:3]
         if not matching_area:
@@ -289,9 +294,44 @@ def search(query, documents):
         title = "Foco na prova" if area == "ENEM" else "Mapa completo do Ensino Médio"
         print(f"{title}:")
         for _, _, document, _, _ in matching_area:
-            print(f"  {document['label']}")
+            choices.append(document)
+            print(f"  {len(choices)}. {document['label']}")
             print(f"  {document['path']}")
         print()
+    return select_folder(choices)
+
+
+def read_input(prompt):
+    print(prompt, end="", flush=True)
+    line = PROMPT_INPUT.readline()
+    if not line:
+        raise EOFError
+    return line.rstrip("\r\n")
+
+
+def select_folder(choices):
+    while True:
+        try:
+            selection = read_input(
+                "Digite o número da pasta para abrir (Enter para cancelar): "
+            ).strip()
+        except (EOFError, KeyboardInterrupt):
+            print()
+            return False
+        if not selection:
+            return False
+        if selection.isdecimal() and 1 <= int(selection) <= len(choices):
+            folder = choices[int(selection) - 1]["path"]
+            try:
+                subprocess.run(["code", str(folder)], check=True)
+            except FileNotFoundError:
+                print("Erro: o comando 'code' não foi encontrado. Instale o VS Code ou habilite-o no PATH.", file=sys.stderr)
+                return False
+            except subprocess.CalledProcessError as error:
+                print(f"Erro: não foi possível abrir a pasta no VS Code (código {error.returncode}).", file=sys.stderr)
+                return False
+            return True
+        print(f"Opção inválida. Digite um número entre 1 e {len(choices)} ou pressione Enter para cancelar.")
 
 
 def main():
@@ -308,7 +348,7 @@ def main():
     print("Localizador de estudos (busca local; digite 'sair' para encerrar)")
     while True:
         try:
-            query = input("\nO que você quer estudar? ").strip()
+            query = read_input("\nO que você quer estudar? ").strip()
         except (EOFError, KeyboardInterrupt):
             print()
             return 0
